@@ -11,6 +11,7 @@ import com.pietroluongo.rmq_client.client.frames.MethodFrame;
 import com.pietroluongo.rmq_client.client.frames.FrameScanner;
 import com.pietroluongo.rmq_client.client.frames.FrameType;
 import com.pietroluongo.rmq_client.client.frames.ProtocolFrame;
+import com.pietroluongo.rmq_client.client.frames.StartConnectionFrame;
 import com.pietroluongo.rmq_client.exceptions.FailedToOpenSocketException;
 
 public class Client implements AutoCloseable {
@@ -39,7 +40,13 @@ public class Client implements AutoCloseable {
             logger.info("Attempting to do handshake");
             var handshakeFrame = new ProtocolFrame();
             this.out.write(handshakeFrame);
-            var openConnectionFrame = new MethodFrame();
+            var openConnectionFrame = new StartConnectionFrame();
+
+            this.out.write(openConnectionFrame);
+
+            var response = this.frames.next();
+
+            logger.info("Got response {}", response);
 
             // logger.info("Sent header {} ({}), waiting for response...",
             // handshakeFrame.toString(),
